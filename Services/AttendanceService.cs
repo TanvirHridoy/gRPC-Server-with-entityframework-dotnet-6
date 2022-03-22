@@ -25,10 +25,13 @@ namespace GrpcService1.Services
         public override async Task GetAttendance(AttendanceRequest request, IServerStreamWriter<AttendanceReply> responseStream, ServerCallContext context)
         {
             var list = await GetAttendanceAsync(request.Empid, Convert.ToDateTime(request.Date));
-
+            if (context.CancellationToken.IsCancellationRequested)
+            {
+                return;
+            }
             foreach (var item in list)
             {
-                //await Task.Delay(100);
+                await Task.Delay(0);
                 await responseStream.WriteAsync(new AttendanceReply
                 {
                     Attdatetime = item.AttDateTime.ToString("dd-MMM-yyyy hh:mm tt"),
